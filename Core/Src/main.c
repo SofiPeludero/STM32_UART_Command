@@ -73,7 +73,7 @@ static void MX_USART1_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void debounce(uint8_t pin_tecla, uint8_t pin_led, int i){
+void debounce(uint8_t pin_tecla, int i){
 	switch (estado_boton[i]){
 	case TEC_INACTIVA:
 		valor_swich[i]= HAL_GPIO_ReadPin(GPIOA, pin_tecla);
@@ -86,7 +86,6 @@ void debounce(uint8_t pin_tecla, uint8_t pin_led, int i){
 	case TEC_PRESS:
 		valor_swich[i] = HAL_GPIO_ReadPin(GPIOA, pin_tecla);
 		if (valor_swich[i] == valor_swich_anterior[i]|| HAL_GetTick() - contador > DEBOUNCE_INTERVAL){
-			HAL_GPIO_WritePin(GPIOA, pin_led, 1);
 			if(HAL_GPIO_ReadPin(GPIOA, Tec1_Pin)==1){
 				HAL_UART_Transmit(&huart1, msj2, strlen((char*)msj2), 1000);
 			}else{
@@ -102,7 +101,6 @@ void debounce(uint8_t pin_tecla, uint8_t pin_led, int i){
 	case TEC_LIBRE:
 		valor_swich[i] = HAL_GPIO_ReadPin(GPIOA, pin_tecla);
 		if (valor_swich[i] == 0){
-			HAL_GPIO_WritePin(GPIOA, pin_led, 0);
 			if(HAL_GPIO_ReadPin(GPIOA, Tec1_Pin)==0){
 				HAL_UART_Transmit(&huart1, msj1, strlen((char*)msj1), 1000);
 			}else{
@@ -153,8 +151,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  debounce(GPIO_PIN_5,ledA_Pin,1);
-	  debounce(GPIO_PIN_6,ledA_Pin,2);
+	  debounce(GPIO_PIN_5,1);
+	  debounce(GPIO_PIN_6,2);
 	  HAL_UART_Receive_IT(&huart1, (uint8_t *)command, 1) ;
 	  while(!received);
 
